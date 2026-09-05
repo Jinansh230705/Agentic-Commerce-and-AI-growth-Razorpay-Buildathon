@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Merchant {
+  id                String   @id @default(uuid())
+  merchantId        String   @unique // e.g., mrc_aster_gear
+  name              String
+  domain            String
+  description       String
+  categories        String // JSON string or comma-separated
+  currency          String   @default("INR")
+  supportedRegions  String // JSON string or comma-separated
+  policies          String // JSON string
+  capabilities      String // JSON string
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  products          Product[]
+}
+
+model Product {
+  id                    String    @id @default(uuid())
+  merchantId            String
+  merchant              Merchant  @relation(fields: [merchantId], references: [merchantId], onDelete: Cascade)
+  productId             String    @unique // stable identifier e.g. prod_aster_run_pro
+  slug                  String    @unique
+  name                  String
+  description           String
+  brand                 String
+  category              String
+  priceAmount           Int
+  currency              String    @default("INR")
+  availability          String    @default("in_stock")
+  inventory             Int       @default(0)
+  images                String // JSON string array of URLs
+  attributes            String // JSON string
+  shipping              String // JSON string
+  returns               String // JSON string
+  warranty              String? // JSON string
+  status                String    @default("active")
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  variants              Variant[]
+  relatedProducts       String? // JSON string array of productIds
+  alternativeProducts   String? // JSON string array of productIds
+  complementaryProducts String? // JSON string array of productIds
+}
+
+model Variant {
+  id        String   @id @default(uuid())
+  sku       String   @unique
+  productId String
+  product   Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  attributes String // JSON string
+  priceAmount Int? // Override product price if present
+  inventory  Int
+  status     String   @default("active")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model CheckoutSession {
+  id              String   @id @default(uuid())
+  checkoutId      String   @unique
+  merchantId      String
+  status          String   @default("CHECKOUT_CREATED") // CHECKOUT_CREATED, CHECKOUT_UPDATED, COMPLETED, EXPIRED, FAILED
+  amount          Int
+  currency        String
+  shippingAddress String?  // JSON
+  buyerInfo       String?  // JSON
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  lineItems       CheckoutLineItem[]
+  order           Order?
+  authorizationMandates AuthorizationMandate[]
+}
+
+model CheckoutLineItem {
+  id                String   @id @default(uuid())
+  checkoutSessionId String
+  checkoutSession   CheckoutSession @relation(fields: [checkoutSessionId], references: [checkoutId], onDelete: Cascade)
+  productId         String
+  variantSku        String?
+  quantity          Int
+  priceAmount       Int
+  currency          String
+}
+
+model Order {
+  id                String   @id @default(uuid())
+  orderId           String   @unique
+  checkoutSessionId String   @unique
+  checkoutSession   CheckoutSession @relation(fields: [checkoutSessionId], references: [checkoutId])
+  merchantId        String
+  status            String   @default("ORDER_PENDING")
+  paymentStatus     String   @default("PAYMENT_PENDING") // PAYMENT_PENDING, PAYMENT_AUTHORIZED, PAYMENT_VERIFIED, PAYMENT_CAPTURED, PAYMENT_FAILED
+  razorpayOrderId   String?  @unique
+  razorpayPaymentId String?
+  totalAmount       Int
+  currency          String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model WebhookEvent {
+  id          String   @id @default(uuid())
+  eventId     String   @unique
+  eventType   String
+  processedAt DateTime @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  timestamp   DateTime @default(now())
+  agentId     String
+  action      String   // e.g. DISCOVERY_SEARCH, CHECKOUT_CREATED, USER_CONFIRMED
+  merchantId  String?
+  checkoutId  String?
+  details     String   // JSON payload of the action
+  result      String?  // SUCCESS, FAILED
+  reason      String?
+}
+
+model AuthorizationMandate {
+  id                String   @id @default(uuid())
+  mandateId         String   @unique
+  checkoutSessionId String
+  checkoutSession   CheckoutSession @relation(fields: [checkoutSessionId], references: [checkoutId], onDelete: Cascade)
+  merchantId        String
+  amount            Int
+  currency          String
+  status            String   @default("ACTIVE") // ACTIVE, CONSUMED, REVOKED, EXPIRED
+  signature         String
+  publicKey         String
+  expiresAt         DateTime
+  createdAt         DateTime @default(now())
+  consumedAt        DateTime?
+}
+
+model GrowthOpportunity {
+  id                String   @id @default(uuid())
+  merchantId        String
+  type              String   // CROSS_SELL, UPSELL, BUNDLE, LOW_PERFORMER, CAMPAIGN
+  title             String
+  explanation       String
+  evidence          String
+  affectedProducts  String   // JSON array of productIds
+  estimatedImpact   Int      // Amount in cents
+  confidence        Int      // 0-100
+  priority          String   // HIGH, MEDIUM, LOW
+  status            String   @default("OPEN") // OPEN, ACTION_PROPOSED, REJECTED, CLOSED
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  actions           GrowthAction[]
+}
+
+model GrowthAction {
+  id                String   @id @default(uuid())
+  opportunityId     String
+  opportunity       GrowthOpportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  merchantId        String
+  actionType        String   // e.g. UPDATE_COMPLEMENTARY, CREATE_DISCOUNT
+  proposedValues    String   // JSON of proposed changes
+  constraints       String   // JSON of constraints (e.g. max discount)
+  status            String   @default("PROPOSED") // PROPOSED, REVIEW_REQUIRED, APPROVED, REJECTED, EXECUTING, EXECUTED, FAILED, MEASURED
+  baselineMetric    Int?
+  postActionMetric  Int?
+  measurementWindow Int?     // Hours or days to measure
+  outcome           String?  // SUCCESS, NEUTRAL, NEGATIVE, INSUFFICIENT_DATA
+  expiresAt         DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}

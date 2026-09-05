@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/registry-client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./registry.db"
+}
+
+model RegisteredMerchant {
+  id               String               @id @default(uuid())
+  domain           String               @unique
+  name             String?
+  description      String?
+  categories       String?              // JSON array string
+  registrationDate DateTime             @default(now())
+  lastVerifiedAt   DateTime?
+  status           String               @default("PENDING") // PENDING, ACTIVE, INACTIVE
+
+  capabilities     MerchantCapability[]
+}
+
+model MerchantCapability {
+  id                 String             @id @default(uuid())
+  merchantId         String
+  merchant           RegisteredMerchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  capabilityType     String             // e.g., 'product_discovery'
+  endpoint           String
+  verificationStatus String             @default("DECLARED") // DECLARED, VERIFIED, UNAVAILABLE
+  lastVerifiedAt     DateTime?
+
+  @@unique([merchantId, capabilityType])
+}
