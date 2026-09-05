@@ -1,22 +1,13 @@
 <p align="center">
-  <h1 align="center">🛒 Agentic Commerce</h1>
+  <h1 align="center">Agentic Commerce</h1>
   <p align="center">
     <strong>AI-native merchant interoperability platform for autonomous shopping</strong>
-  </p>
-  <p align="center">
-    <a href="#demo-video">Demo</a> · <a href="#key-features">Features</a> · <a href="#system-architecture">Architecture</a> · <a href="#local-setup">Setup</a>
-  </p>
-  <p align="center">
-    <img src="https://img.shields.io/badge/Razorpay-Buildathon-blue?style=for-the-badge&logo=razorpay" alt="Razorpay Buildathon" />
-    <img src="https://img.shields.io/badge/Track-One-orange?style=for-the-badge" alt="Track One" />
-    <img src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js" alt="Next.js 16" />
-    <img src="https://img.shields.io/badge/TypeScript-5.9-3178c6?style=for-the-badge&logo=typescript" alt="TypeScript" />
   </p>
 </p>
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Project Overview](#project-overview)
 - [Problem Statement](#problem-statement)
@@ -39,7 +30,6 @@
 - [Local Setup](#local-setup)
 - [Environment Variables](#environment-variables)
 - [AI Provider Configuration](#ai-provider-configuration)
-- [Demo Video](#demo-video)
 - [Testing & Verification](#testing--verification)
 - [External Agent / MCP Usage](#external-agent--mcp-usage)
 - [Known Limitations](#known-limitations)
@@ -520,24 +510,6 @@ The AI agent is configured with the following tools:
 - `createCheckout` — Initialize checkout sessions
 - `updateCheckout` — Set shipping/buyer info
 - `negotiateDiscount` — Attempt price negotiation
-
----
-
-## Demo Video
-
-> 📹 **[Watch the Demo Video →](https://youtu.be/PLACEHOLDER)**
->
-> *Link to be updated with the final demo recording*
-
-The demo showcases:
-1. A user asking the AI Buyer for running shoes under ₹5,000
-2. The agent discovering merchants, searching catalogs, and selecting the best match
-3. Checkout creation with full transaction details
-4. Human authorization via AP2 (explicit "Authorize & Pay" button)
-5. Razorpay payment flow (test mode)
-6. Order confirmation and audit trail
-7. Merchant Growth Dashboard showing AI-detected opportunities
-
 ---
 
 ## Testing & Verification
@@ -685,6 +657,3 @@ MIT License — see [LICENSE](./LICENSE) for details.
 
 ---
 
-<p align="center">
-  <sub>Built with ⚡ for the Razorpay Buildathon by Jinansh</sub>
-</p>
