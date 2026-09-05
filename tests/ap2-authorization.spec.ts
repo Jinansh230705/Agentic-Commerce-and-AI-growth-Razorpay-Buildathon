@@ -42,7 +42,8 @@ test.describe.serial('Phase 4 AP2 Authorization Security', () => {
         images: '[]',
         attributes: '{}',
         shipping: '{}',
-        returns: '{}'
+        returns: '{}',
+        merchant: { connect: { merchantId } }
       }
     })
 

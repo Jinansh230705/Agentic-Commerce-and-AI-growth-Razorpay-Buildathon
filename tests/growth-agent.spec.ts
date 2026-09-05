@@ -24,7 +24,8 @@ test.describe.serial('Phase 5 Merchant Growth Agent', () => {
       data: {
         productId: `prod_A_${crypto.randomUUID()}`, slug: `slug_A_${crypto.randomUUID()}`, name: 'Product A',
         description: 'A', brand: 'B', category: 'C', priceAmount: 1000, inventory: 100,
-        images: '[]', attributes: '{}', shipping: '{}', returns: '{}'
+        images: '[]', attributes: '{}', shipping: '{}', returns: '{}',
+        merchant: { connect: { merchantId } }
       }
     })
     productAId = pA.productId
@@ -33,7 +34,8 @@ test.describe.serial('Phase 5 Merchant Growth Agent', () => {
       data: {
         productId: `prod_B_${crypto.randomUUID()}`, slug: `slug_B_${crypto.randomUUID()}`, name: 'Product B',
         description: 'B', brand: 'B', category: 'C', priceAmount: 500, inventory: 100,
-        images: '[]', attributes: '{}', shipping: '{}', returns: '{}'
+        images: '[]', attributes: '{}', shipping: '{}', returns: '{}',
+        merchant: { connect: { merchantId } }
       }
     })
     productBId = pB.productId
@@ -42,7 +44,8 @@ test.describe.serial('Phase 5 Merchant Growth Agent', () => {
       data: {
         productId: `prod_C_${crypto.randomUUID()}`, slug: `slug_C_${crypto.randomUUID()}`, name: 'Product C - Slow Mover',
         description: 'C', brand: 'B', category: 'C', priceAmount: 2000, inventory: 999999, // Massively high inventory so it sorts to top
-        images: '[]', attributes: '{}', shipping: '{}', returns: '{}'
+        images: '[]', attributes: '{}', shipping: '{}', returns: '{}',
+        merchant: { connect: { merchantId } }
       }
     })
     productCId = pC.productId
